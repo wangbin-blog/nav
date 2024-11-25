@@ -2,21 +2,17 @@
 // Copyright @ 2018-present xiejiahe. All rights reserved.
 // See https://github.com/xjh22222228/nav
 
-import {
-  Component,
-  OnInit,
-  Input,
-  Output,
-  EventEmitter,
-  ChangeDetectionStrategy,
-} from '@angular/core'
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
+import { CommonModule } from '@angular/common'
 import { INavThreeProp, INavProps } from 'src/types'
 import { isLogin } from 'src/utils/user'
 import { websiteList, settings } from 'src/store'
+import { NzIconModule } from 'ng-zorro-antd/icon'
 import event from 'src/utils/mitt'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [CommonModule, NzIconModule],
   selector: 'app-toolbar-title',
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.scss'],
