@@ -25,12 +25,14 @@ import { routes } from './app.routes'
 import { MoveWebComponent } from 'src/components/move-web/index.component'
 import { CreateWebComponent } from 'src/components/create-web/index.component'
 import { IconGitComponent } from 'src/components/icon-git/icon-git.component'
+import { EditCategoryComponent } from 'src/components/edit-category/index.component'
 import Alert from './alert-event'
 import event from 'src/utils/mitt'
 
 @Component({
   standalone: true,
   imports: [
+    EditCategoryComponent,
     NzSpinModule,
     IconGitComponent,
     RouterOutlet,
@@ -99,29 +101,30 @@ export class AppComponent {
 
     if (isSelfDevelop) {
       getContentes().then(() => {
-        // 处理默认主题
-        const currentRoutes = this.router.config
-        const defaultTheme = getDefaultTheme().toLowerCase()
-        const hasDefault = routes.find(
-          (item: any) => item.path === defaultTheme
-        )
-        const isHome = this.router.url.split('?')[0] === '/'
-        if (hasDefault) {
-          this.router.resetConfig([
-            ...currentRoutes,
-            {
-              ...hasDefault,
-              path: '**',
-            },
-          ])
-        }
-        if (isHome) {
-          this.router.navigate([defaultTheme])
-        }
-        this.updateDocumentTitle()
-        this.fetchIng = false
-        event.emit('WEB_FINISH')
-        window.__FINISHED__ = true
+        setTimeout(() => {
+          const currentRoutes = this.router.config
+          const defaultTheme = getDefaultTheme().toLowerCase()
+          const hasDefault = routes.find(
+            (item: any) => item.path === defaultTheme
+          )
+          const isHome = this.router.url.split('?')[0] === '/'
+          if (hasDefault) {
+            this.router.resetConfig([
+              ...currentRoutes,
+              {
+                ...hasDefault,
+                path: '**',
+              },
+            ])
+          }
+          if (isHome) {
+            this.router.navigate([defaultTheme])
+          }
+          this.updateDocumentTitle()
+          this.fetchIng = false
+          event.emit('WEB_FINISH')
+          window.__FINISHED__ = true
+        }, 100)
       })
     } else {
       fetchWeb().finally(() => {
