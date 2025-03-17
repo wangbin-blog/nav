@@ -5,20 +5,13 @@
 import { INavProps, IWebProps, INavTwoProp, INavThreeProp } from '../types'
 import { websiteList } from '../store'
 import { $t } from '../locale'
+import { getTempId } from './utils'
 
-let id = -Date.now()
-
-function getCreatedAt(node?: Element): string {
-  const now = new Date().toString()
-  const addDate = node?.getAttribute('add_date')
-  return addDate ? new Date(Number(addDate) * 1000).toString() : now
-}
+let id = getTempId()
 
 const getTitle = (node: Element): string => node.textContent || ''
 const getUrl = (node: Element): string => node.getAttribute('href') || ''
 const getIcon = (node: Element): string => node.getAttribute('icon') || ''
-
-const nowCratedAt = getCreatedAt()
 
 function findUnclassifiedData(roolDL: Element): IWebProps[] {
   const data: IWebProps[] = []
@@ -28,7 +21,6 @@ function findUnclassifiedData(roolDL: Element): IWebProps[] {
       if (a?.nodeName === 'A') {
         data.push({
           name: getTitle(a),
-          createdAt: getCreatedAt(a),
           icon: getIcon(a),
           url: getUrl(a),
           tags: [],
@@ -71,7 +63,6 @@ export function parseBookmark(
           if (titleEl) {
             parentData.nav.push({
               name: getTitle(titleEl),
-              createdAt: getCreatedAt(titleEl),
               url: getUrl(titleEl),
               desc: '',
               tags: [],
@@ -93,8 +84,8 @@ export function parseBookmark(
           if (titleEl) {
             const title = getTitle(titleEl)
             const threeLevel: INavThreeProp = {
+              id: (id += 1),
               title,
-              createdAt: getCreatedAt(titleEl),
               nav: [],
               icon: '',
             }
@@ -116,8 +107,8 @@ export function parseBookmark(
           if (titleEl) {
             const title = getTitle(titleEl)
             const twoLevel: INavTwoProp = {
+              id: (id += 1),
               title,
-              createdAt: getCreatedAt(titleEl),
               icon: '',
               nav: [],
             }
@@ -128,8 +119,9 @@ export function parseBookmark(
               const unclassifiedData = findUnclassifiedData(DL3)
               if (unclassifiedData.length > 0) {
                 twoLevel.nav.push({
-                  createdAt: nowCratedAt,
+                  id: (id += 1),
                   title,
+                  icon: '',
                   nav: unclassifiedData,
                 })
               }
@@ -147,8 +139,8 @@ export function parseBookmark(
         if (titleEl) {
           const title = getTitle(titleEl)
           const oneLevel: INavProps = {
+            id: (id += 1),
             title,
-            createdAt: getCreatedAt(titleEl),
             icon: '',
             nav: [],
           }
@@ -159,11 +151,14 @@ export function parseBookmark(
             const unclassifiedData = findUnclassifiedData(DL)
             if (unclassifiedData.length > 0) {
               oneLevel.nav.push({
-                createdAt: nowCratedAt,
+                id: (id += 1),
                 title,
+                icon: '',
                 nav: [
                   {
+                    id: (id += 1),
                     title,
+                    icon: '',
                     nav: unclassifiedData,
                   },
                 ],
@@ -178,15 +173,19 @@ export function parseBookmark(
     const unclassifiedData = findUnclassifiedData(roolDL)
     if (unclassifiedData.length > 0) {
       data.push({
+        id: (id += 1),
         title: $t('_uncategorized'),
-        createdAt: nowCratedAt,
+        icon: '',
         nav: [
           {
-            createdAt: nowCratedAt,
+            id: (id += 1),
             title: $t('_uncategorized'),
+            icon: '',
             nav: [
               {
+                id: (id += 1),
                 title: $t('_uncategorized'),
+                icon: '',
                 nav: unclassifiedData,
               },
             ],

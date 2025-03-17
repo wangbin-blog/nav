@@ -5,8 +5,8 @@
 import navConfig from '../../nav.config.json'
 import { internal } from 'src/store'
 import { isLogin } from 'src/utils/user'
+import { CODE_SYMBOL } from 'src/constants/symbol'
 
-// 是否自有部署
 export const isSelfDevelop = !!navConfig.address
 
 interface TemplateData {
@@ -29,7 +29,7 @@ export function compilerTemplate(str: string): string {
 }
 
 const DARK_THEME = {
-  cssUrl: '//unpkg.com/ng-zorro-antd@19.0.2/ng-zorro-antd.dark.min.css',
+  cssUrl: '//unpkg.com/ng-zorro-antd@19.1.0/ng-zorro-antd.dark.min.css',
   cssId: 'dark-css',
   classes: ['dark-container', 'dark'],
 } as const
@@ -50,4 +50,53 @@ export function removeDark(): void {
   const darkNode = document.getElementById(DARK_THEME.cssId)
   document.documentElement.classList.remove(...DARK_THEME.classes)
   darkNode?.parentNode?.removeChild(darkNode)
+}
+
+export function parseHtmlWithContent(node: HTMLElement, str: string) {
+  if (str[0] === CODE_SYMBOL) {
+    if (!node) return
+    const s = node.querySelectorAll('script')
+    s.forEach((script) => {
+      script.parentNode?.removeChild(script)
+    })
+
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(str, 'text/html')
+    const scripts = doc.querySelectorAll('script')
+    scripts.forEach((script) => {
+      const newScript: any = document.createElement('script')
+      const text = script.textContent?.trim() || ''
+      const attributes = script.attributes
+      for (let i = 0; i < attributes.length; i++) {
+        const attr = attributes[i]
+        newScript[attr.name] = attr.value
+      }
+      if (text) {
+        newScript.textContent = `{${text}}`
+      }
+      node.appendChild(newScript)
+    })
+  }
+}
+
+export function parseLoadingWithContent(str: string): string {
+  if (str[0] !== '!') {
+    return str
+  }
+  const loadingHtml = `
+<div class="x31">
+  <svg viewBox="25 25 50 50" class="x21">
+    <circle cx="50" cy="50" r="20" fill="none" class="path"></circle>
+  </svg>
+</div>
+`
+  str = str.slice(1)
+  if (str.includes('#loadingx1')) {
+    return str.replaceAll('#loadingx1', '') + loadingHtml
+  }
+  return str
+}
+
+export function getTempId() {
+  return -Date.now()
 }
